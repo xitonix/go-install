@@ -33,22 +33,29 @@ var (
 
 
 func main() {
-	log.SetFlags(0)
 	app := kingpin.New("go-install", "A CLI tool to install/update the latest Go binaries on your machine.")
+
 	root := app.Flag("go-base", "The root path to install the runtime. Go will be installed in `go-base/go`.").
 		Envar("GO_BASE").
 		Short('g').
 		Required().
 		String()
 
-	app.Command("version", "Displays the current version of the tool.").Action(printVersion)
+	yes := app.Flag("yes", "Disables pre-installation user confirmation.").
+		Short('y').
+		NoEnvar().
+		Bool()
 
-	cmd, err := app.Parse(os.Args[1:])
+	ver := app.Flag("version", "Displays the current version of the tool.").Short('v').Bool()
+
+	log.SetFlags(0)
+	_, err := app.Parse(os.Args[1:])
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if cmd == "version" {
+	if *ver {
+		printVersion()
 		return
 	}
 
@@ -84,7 +91,7 @@ func main() {
 		msg = fmt.Sprintf("Installed: v%s, ", currentVersion) + msg
 	}
 
-	if !askForConfirmation(msg + " Would you like to proceed") {
+	if !askForConfirmation(*yes, msg + " Would you like to proceed") {
 		return
 	}
 
@@ -107,12 +114,11 @@ func main() {
 	}
 }
 
-func printVersion(*kingpin.ParseContext) error {
+func printVersion() {
 	if version == "" {
 		version = "[built from source]"
 	}
 	fmt.Printf("go-install %s", version)
-	return nil
 }
 
 func install(newVersion, currentVersion, downloadedTar, root string) error {
@@ -127,6 +133,7 @@ func install(newVersion, currentVersion, downloadedTar, root string) error {
 	return extract(downloadedTar, root)
 }
 
+// https://medium.com/learning-the-go-programming-language/working-with-compressed-tar-files-in-go-e6fe9ce4f51d
 func extract(tarName, destinationDir string) (err error) {
 	tarFile, err := os.Open(tarName)
 	if err != nil {
@@ -280,7 +287,10 @@ func cleanup(filePath string) {
 	}
 }
 
-func askForConfirmation(s string) bool {
+func askForConfirmation(yes bool, s string) bool {
+	if yes {
+		return true
+	}
 	scanner := bufio.NewScanner(os.Stdin)
 	msg := fmt.Sprintf("%s [y/n]?: ", s)
 	for fmt.Print(msg); scanner.Scan(); fmt.Print(msg) {
