@@ -26,6 +26,12 @@ const (
 	base = "https://golang.org/dl"
 )
 
+// Version build flags
+var (
+	version    string
+)
+
+
 func main() {
 	log.SetFlags(0)
 	app := kingpin.New("go-install", "A CLI tool to install/update the latest Go binaries on your machine.")
@@ -35,9 +41,15 @@ func main() {
 		Required().
 		String()
 
-	_, err := app.Parse(os.Args[1:])
+	app.Command("version", "Displays the current version of the tool.").Action(printVersion)
+
+	cmd, err := app.Parse(os.Args[1:])
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if cmd == "version" {
+		return
 	}
 
 	suffix := fmt.Sprintf("%s-%s.tar.gz", runtime.GOOS, runtime.GOARCH)
@@ -93,6 +105,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func printVersion(*kingpin.ParseContext) error {
+	if version == "" {
+		version = "[built from source]"
+	}
+	fmt.Printf("go-install v%s", version)
+	return nil
 }
 
 func install(newVersion, currentVersion, downloadedTar, root string) error {
