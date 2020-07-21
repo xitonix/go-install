@@ -76,7 +76,7 @@ func main() {
 		return
 	}
 
-	log.Printf("\nPreparing to install v%s", newVersion)
+	log.Printf("Preparing to install v%s", newVersion)
 
 	tarFile, err := downloadFile(url)
 	if err != nil {
@@ -86,7 +86,7 @@ func main() {
 	defer func() {
 		cleanup(tarFile)
 		current := getCurrentVersion()
-		fmt.Println(current)
+		fmt.Println(strings.TrimSpace(current))
 	}()
 
 	err = install(newVersion, currentVersion, tarFile, *root)
@@ -102,7 +102,7 @@ func install(newVersion, currentVersion, downloadedTar, root string) error {
 			return err
 		}
 	}
-	log.Printf("Installing v%s", newVersion)
+	log.Printf("Installing v%s runtime", newVersion)
 
 	return extract(downloadedTar, root)
 }
