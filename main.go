@@ -111,7 +111,7 @@ func printVersion(*kingpin.ParseContext) error {
 	if version == "" {
 		version = "[built from source]"
 	}
-	fmt.Printf("go-install v%s", version)
+	fmt.Printf("go-install %s", version)
 	return nil
 }
 
