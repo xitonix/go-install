@@ -219,7 +219,7 @@ func removeCurrentVersion(currentVersion string, root string) error {
 
 func checkVersions(url string) (string, string) {
 	current := getCurrentVersion()
-	reg := regexp.MustCompile(`\d+\.\d+\.\d+`)
+	reg := regexp.MustCompile(`\d+(\.\d+)?(\.\d+)?`)
 	return reg.FindString(url), strings.TrimSpace(reg.FindString(current))
 }
 
