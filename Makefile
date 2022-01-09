@@ -12,15 +12,15 @@ prepare:
 
 windows:
 	@echo Building Windows amd64 binaries
-	@env GOOS=windows GOARCH=amd64 go build -i -v -o $(WINDOWS)/$(EXECUTABLE).exe -ldflags="-s -w -X main.version=$(VERSION)"  *.go
+	@env GOOS=windows GOARCH=amd64 go build -v -o $(WINDOWS)/$(EXECUTABLE).exe -ldflags="-s -w -X main.version=$(VERSION)"  *.go
 
 linux:
 	@echo Building Linux amd64 binaries
-	@env GOOS=linux GOARCH=amd64 go build -i -v -o $(LINUX)/$(EXECUTABLE) -ldflags="-s -w -X main.version=$(VERSION)"  *.go
+	@env GOOS=linux GOARCH=amd64 go build -v -o $(LINUX)/$(EXECUTABLE) -ldflags="-s -w -X main.version=$(VERSION)"  *.go
 
 darwin:
 	@echo Building Mac amd64 binaries
-	@env GOOS=darwin GOARCH=amd64 go build -i -v -o $(DARWIN)/$(EXECUTABLE) -ldflags="-s -w -X main.version=$(VERSION)"  *.go
+	@env GOOS=darwin GOARCH=amd64 go build -v -o $(DARWIN)/$(EXECUTABLE) -ldflags="-s -w -X main.version=$(VERSION)"  *.go
 	@env GOOS=darwin GOARCH=amd64 go install -ldflags="-s -w -X main.version=$(VERSION)"
 
 ## Builds the binaries.
