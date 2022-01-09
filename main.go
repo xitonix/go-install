@@ -28,9 +28,8 @@ const (
 
 // Version build flags
 var (
-	version    string
+	version string
 )
-
 
 func main() {
 	app := kingpin.New("go-install", "A CLI tool to install/update the latest Go binaries on your machine.")
@@ -64,6 +63,7 @@ func main() {
 	var url string
 	c := colly.NewCollector()
 	c.MaxDepth = 1
+
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		if len(url) > 0 {
 			return
@@ -91,7 +91,7 @@ func main() {
 		msg = fmt.Sprintf("Installed: v%s, ", currentVersion) + msg
 	}
 
-	if !askForConfirmation(*yes, msg + " Would you like to proceed") {
+	if !askForConfirmation(*yes, msg+" Would you like to proceed") {
 		return
 	}
 
