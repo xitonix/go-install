@@ -5,7 +5,14 @@ A CLI tool to install/update the latest version of Go runtime on your machine
 
 `go get -u github.com/xitonix/go-install`
 
-or download the binary from the [release](https://github.com/xitonix/go-install/releases) page.
+OR 
+
+Download the binary from the [release](https://github.com/xitonix/go-install/releases) page.
+
+OR
+
+Clone the repo and run `install.sh`
+- If `GOBIN` is not set, the tool will be installed in `/usr/local/bin`
 
 **NOTE**
 
