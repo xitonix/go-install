@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	base = "https://golang.org/dl"
+	base = "https://go.dev/dl"
 )
 
 // Version build flags
@@ -79,7 +79,7 @@ func main() {
 		}
 		href := e.Attr("href")
 		if strings.Contains(href, suffix) {
-			url = "https://golang.org" + href
+			url = "https://go.dev/dl" + href
 		}
 	})
 
