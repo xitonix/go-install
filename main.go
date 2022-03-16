@@ -45,6 +45,9 @@ func main() {
 		NoEnvar().
 		Bool()
 
+	runtimeVersion := app.Arg("runtime-version", "Go runtime version to install. Leave it empty to install the latest (eg. 1.17.8).").
+		String()
+
 	ver := app.Flag("version", "Displays the current version of the tool.").Short('v').Bool()
 
 	log.SetFlags(0)
@@ -59,6 +62,12 @@ func main() {
 	}
 
 	suffix := fmt.Sprintf("%s-%s.tar.gz", runtime.GOOS, runtime.GOARCH)
+	goVersion := strings.ToLower(strings.TrimSpace(*runtimeVersion))
+	toInstall := " the latest "
+	if len(goVersion) > 0 && goVersion != "latest" {
+		suffix = fmt.Sprintf("go%s.%s", strings.TrimPrefix(goVersion, "v"), suffix)
+		toInstall = " "
+	}
 
 	var url string
 	c := colly.NewCollector()
@@ -74,7 +83,7 @@ func main() {
 		}
 	})
 
-	log.Printf("Looking for the latest %s release on the server.", suffix)
+	log.Printf("Looking for%s%s release on the server.", toInstall, suffix)
 	err = c.Visit(base)
 	if err != nil {
 		log.Fatal(err)
@@ -86,7 +95,7 @@ func main() {
 
 	newVersion, currentVersion := checkVersions(url)
 
-	msg := fmt.Sprintf("Latest: v%s", newVersion)
+	msg := fmt.Sprintf("Requested: v%s", newVersion)
 	if currentVersion != "" {
 		msg = fmt.Sprintf("Installed: v%s, ", currentVersion) + msg
 	}

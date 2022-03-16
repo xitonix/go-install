@@ -16,3 +16,4 @@
 go-install
 .idea
 bin/
+.DS_Store
