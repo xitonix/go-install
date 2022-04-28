@@ -79,7 +79,7 @@ func main() {
 		}
 		href := e.Attr("href")
 		if strings.Contains(href, suffix) {
-			url = "https://go.dev/dl" + href
+			url = "https://go.dev" + href
 		}
 	})
 
