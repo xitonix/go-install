@@ -17,9 +17,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/alecthomas/kingpin/v2"
 	"github.com/cavaliercoder/grab"
 	"github.com/gocolly/colly/v2"
-	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 const (
@@ -34,7 +34,7 @@ var (
 func main() {
 	app := kingpin.New("go-install", "A CLI tool to install/update the latest Go binaries on your machine.")
 
-	root := app.Flag("go-base", "The root path to install the runtime. Go will be installed in `go-base/go`.").
+	root := app.Flag("go-base", "The root path to install the runtime. Go will be installed in `$GO_BASE/go`.").
 		Envar("GO_BASE").
 		Short('g').
 		Required().
@@ -192,6 +192,9 @@ func extract(tarName, destinationDir string) (err error) {
 			}
 			continue
 		}
+		if err = os.MkdirAll(filepath.Dir(absFileName), 0755); err != nil {
+			return fmt.Errorf("Failed to create parent directory for %s: %w", absFileName, err)
+		}
 		// create new file with original file mode
 		file, err := os.OpenFile(
 			absFileName,
@@ -213,11 +216,12 @@ func extract(tarName, destinationDir string) (err error) {
 			return fmt.Errorf("file size mismatch. Wrote %d, Wanted %d", n, fileInfo.Size())
 		}
 	}
+	log.Printf("Go was successfully installed in %s", path.Join(absPath, "go"))
 	return nil
 }
 
 func removeCurrentVersion(currentVersion string, root string) error {
-	log.Printf("Removing v%s files", currentVersion)
+	log.Printf("Removing v%s files from %s", currentVersion, root)
 	currentPath := path.Join(root, "go")
 	err := os.RemoveAll(currentPath)
 	if err != nil && !os.IsNotExist(err) {
