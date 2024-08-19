@@ -257,13 +257,13 @@ func printDownloadPercent(wg *sync.WaitGroup, resp *grab.Response) {
 		case <-t.C:
 			fmt.Printf("Transferred %v/%v bytes (%.2f%%)       \r",
 				resp.BytesComplete(),
-				resp.Size,
+				resp.Size(),
 				100*resp.Progress())
 
 		case <-resp.Done:
 			fmt.Printf("Transferred %v/%v bytes (%.2f%%)       \n",
 				resp.BytesComplete(),
-				resp.Size,
+				resp.Size(),
 				100*resp.Progress())
 			return
 		}
