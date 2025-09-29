@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=$(git describe --tags --abbrev=0)
+VERSION=$(git tag --sort=-version:refname | head -n1)
 TARGET=$GOBIN
 if [[ x"${GOBIN}" == "x"  ]]; then
   TARGET='/usr/local/bin'

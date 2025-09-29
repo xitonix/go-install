@@ -4,7 +4,8 @@ EXECUTABLE="go-install"
 WINDOWS=./bin/windows_amd64
 LINUX=./bin/linux_amd64
 DARWIN=./bin/darwin_amd64
-VERSION=$(shell git describe --tags --abbrev=0)
+DARWIN_ARM=./bin/darwin_arm64
+VERSION=$(shell git tag --sort=-version:refname | head -n1)
 
 prepare:
 	@echo Cleaning the bin directory
@@ -21,10 +22,13 @@ linux:
 darwin:
 	@echo Building Mac amd64 binaries
 	@env GOOS=darwin GOARCH=amd64 go build -v -o $(DARWIN)/$(EXECUTABLE) -ldflags="-s -w -X main.version=$(VERSION)"  *.go
-	@env GOOS=darwin GOARCH=amd64 go install -ldflags="-s -w -X main.version=$(VERSION)"
+	@env GOOS=darwin GOARCH=arm64 go build -v -o $(DARWIN_ARM)/$(EXECUTABLE) -ldflags="-s -w -X main.version=$(VERSION)"  *.go
+
+install_os:
+	@env GOOS="$(go env GOOS)" GOARCH="$(go env GOARCH)" go install -ldflags="-s -w -X main.version=$(VERSION)"
 
 ## Builds the binaries.
-build: windows linux darwin
+build: windows linux darwin install_os
 	@echo Version: $(VERSION)
 
 test: ##  Runs the unit tests.
@@ -33,7 +37,8 @@ test: ##  Runs the unit tests.
 
 package:
 	@echo Creating the zip file
-	@tar -C $(DARWIN) -cvzf ./bin/$(EXECUTABLE)_darwin-$(VERSION).tar.gz $(EXECUTABLE)
+	@tar -C $(DARWIN) -cvzf ./bin/$(EXECUTABLE)_darwin_amd64-$(VERSION).tar.gz $(EXECUTABLE)
+	@tar -C $(DARWIN_ARM) -cvzf ./bin/$(EXECUTABLE)_darwin_arm64-$(VERSION).tar.gz $(EXECUTABLE)
 	@zip -j ./bin/$(EXECUTABLE)_windows-$(VERSION).zip $(WINDOWS)/$(EXECUTABLE).exe
 	@tar -C $(LINUX) -cvzf ./bin/$(EXECUTABLE)_linux-$(VERSION).tar.gz $(EXECUTABLE)
 
@@ -46,6 +51,6 @@ help: ##  Show this help.
 all: test prepare build package clean
 
 clean: ## Removes the artifacts.
-	@rm -rf $(WINDOWS) $(LINUX) $(DARWIN)
+	@rm -rf $(WINDOWS) $(LINUX) $(DARWIN) $(DARWIN_ARM)
 
 .PHONY: all
